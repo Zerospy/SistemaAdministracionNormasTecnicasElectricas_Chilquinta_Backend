@@ -46,6 +46,11 @@ public class FileUploadController {
     public ResponseEntity handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Integer normaId, @PathVariable FileExtension fileType) {
 
         try {
+
+            if (file != null && file.getSize() <= 0) {
+                throw new Exception("El archivo no puede estar vacío");
+            }
+
             storageService.store(file, normaId, fileType);
             return new ResponseEntity(HttpStatus.OK);
 
