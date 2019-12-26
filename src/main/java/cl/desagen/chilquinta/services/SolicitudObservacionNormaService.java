@@ -1,6 +1,7 @@
 package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.dto.CommentRequestDto;
+import cl.desagen.chilquinta.dto.SolicitudObservacionNormaDto;
 import cl.desagen.chilquinta.entities.EstadosEntity;
 import cl.desagen.chilquinta.entities.NormaEntity;
 import cl.desagen.chilquinta.entities.SolicitudObservacionNormaEntity;
@@ -64,6 +65,30 @@ public class SolicitudObservacionNormaService {
         return solicitudObservacionNormaRepository.findAllByNormaEntityId(normaId);
     }
 
+    public void saveRequestComment(SolicitudObservacionNormaDto solicitudObservacionNormaDto, String username) {
+
+        SolicitudObservacionNormaEntity solicitudObservacionNormaEntity = new SolicitudObservacionNormaEntity();
+
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        solicitudObservacionNormaEntity.setCreatedAt(timestamp);
+        solicitudObservacionNormaEntity.setEnabled(true);
+
+        Optional<NormaEntity> normaEntity = normaRepository.findById(solicitudObservacionNormaDto.getNormaID());
+        Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
+
+        solicitudObservacionNormaEntity.setNormaEntity(normaEntity.get());
+        solicitudObservacionNormaEntity.setUsuarioSolicitaEntity(usuarioSolicitaEntity.get());
+
+        solicitudObservacionNormaEntity.setComments(solicitudObservacionNormaDto.getComments());
+
+        solicitudObservacionNormaDto.getUsuarioRecibeID().forEach(usuarioID -> {
+            Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(usuarioID);
+            solicitudObservacionNormaEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
+            solicitudObservacionNormaRepository.save(solicitudObservacionNormaEntity);
+        });
+
+    }
 
     public SolicitudObservacionNormaEntity save(SolicitudObservacionNormaEntity SolicitudObservacionNormaEntity) {
         return solicitudObservacionNormaRepository.save(SolicitudObservacionNormaEntity);

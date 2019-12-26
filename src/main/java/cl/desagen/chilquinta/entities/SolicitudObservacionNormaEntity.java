@@ -28,6 +28,8 @@ public class SolicitudObservacionNormaEntity {
 
     private Timestamp updatedAt;
 
+    private Boolean enabled;
+
     @Transient
     private Boolean isCurrentUserComment;
 
