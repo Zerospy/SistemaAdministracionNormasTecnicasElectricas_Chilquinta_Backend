@@ -10,4 +10,6 @@ public interface UsuarioRepository extends PagingAndSortingRepository<UsuarioEnt
     Optional<UsuarioEntity> findByUsuarioAndClave(String username, String clave);
 
     Optional<UsuarioEntity> findByUsuario(String username);
+
+    Iterable<UsuarioEntity> findAllByOrderByNombresAsc();
 }

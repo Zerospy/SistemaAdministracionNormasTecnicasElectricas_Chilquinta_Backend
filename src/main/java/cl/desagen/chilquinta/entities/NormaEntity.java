@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -35,6 +36,11 @@ public class NormaEntity {
     @JsonProperty
     @JoinColumn(name = "estado_id")
     private EstadosEntity estado;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonProperty
+    @JoinColumn(name = "norma_id")
+    private List<SolicitudObservacionNormaEntity> usersToComment;
 
     @JsonProperty
     @Column(name = "fecha")

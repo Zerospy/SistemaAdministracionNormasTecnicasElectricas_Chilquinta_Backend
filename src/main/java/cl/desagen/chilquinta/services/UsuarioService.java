@@ -23,7 +23,7 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     public Iterable<UsuarioEntity> findAll() {
-        return usuarioRepository.findAll();
+        return usuarioRepository.findAllByOrderByNombresAsc();
     }
 
     public Iterable<UsuarioEntity> findAll(Pageable pageable) {
