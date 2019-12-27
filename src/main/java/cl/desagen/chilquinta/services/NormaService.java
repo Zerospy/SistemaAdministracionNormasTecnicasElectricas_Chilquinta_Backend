@@ -3,6 +3,7 @@ package cl.desagen.chilquinta.services;
 import cl.desagen.chilquinta.dto.DashboardDto;
 import cl.desagen.chilquinta.entities.EstadosEntity;
 import cl.desagen.chilquinta.entities.NormaEntity;
+import cl.desagen.chilquinta.entities.SolicitudObservacionNormaEntity;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
 import cl.desagen.chilquinta.enums.EstadoNorma;
 import cl.desagen.chilquinta.enums.TipoNorma;
@@ -40,6 +41,8 @@ public class NormaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private SolicitudObservacionNormaRepository solicitudObservacionNormaRepository;
 
     @Value("${spring.mail.to}")
     private String[] mailTo;
@@ -49,6 +52,12 @@ public class NormaService {
 
     @Value("${spring.mail.publish.body}")
     private String mailPublishBody;
+
+    @Value("${spring.mail.comment.request.subject}")
+    private String mailCommentRequestSubject;
+
+    @Value("${spring.mail.comment.request.body}")
+    private String mailCommentRequestBody;
 
     @Value("${spring.mail.dardebaja.subject}")
     private String maildardeBajaSubject;
@@ -81,7 +90,7 @@ public class NormaService {
         return normaRepository.findAll(pageable);
     }
 
-    public NormaEntity save(NormaEntity normaEntity) {
+    public NormaEntity save(NormaEntity normaEntity, String username) {
 
         Timestamp tsFromInstant = Timestamp.from(Instant.now());
         normaEntity.setFecha(tsFromInstant);
@@ -89,6 +98,24 @@ public class NormaService {
         normaEntity.setTipoNorma(TipoNorma.NACIONAL);
         Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.EN_REVISION.value));
         normaEntity.setEstado(normaEstado.get());
+
+        if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0) {
+            normaEntity.getUsersToComment().forEach(userToComment -> {
+                Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(userToComment.getUsuarioRecibeEntity().getId());
+                Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
+
+                SolicitudObservacionNormaEntity solicitudObservacionNormaEntity = new SolicitudObservacionNormaEntity();
+
+                solicitudObservacionNormaEntity.setUsuarioSolicitaEntity(usuarioSolicitaEntity.get());
+                solicitudObservacionNormaEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
+                solicitudObservacionNormaEntity.setNormaEntity(normaEntity);
+                solicitudObservacionNormaEntity.setCreatedAt(tsFromInstant);
+
+                solicitudObservacionNormaRepository.save(solicitudObservacionNormaEntity);
+
+                emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, normaEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), normaEntity.getCodNorma()));
+            });
+        }
 
         return normaRepository.save(normaEntity);
 
