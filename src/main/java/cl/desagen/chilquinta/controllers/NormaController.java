@@ -36,8 +36,9 @@ public class NormaController {
     private NormaRepository normaRepository;
 
     @GetMapping(value = "/", produces = APPLICATION_JSON_UTF8_VALUE)
-    public Iterable<NormaEntity> findAll() {
-        return normaService.findAll();
+    public Iterable<NormaEntity> findAll(HttpServletRequest httpServletRequest) throws Exception {
+        String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
+        return normaService.findAllAssigned(username);
     }
 
     @GetMapping(value = "/internacional/all", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -56,10 +57,11 @@ public class NormaController {
     }
 
     @PostMapping(value = "/", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity save(@RequestBody NormaEntity normaEntity) {
+    public ResponseEntity save(@RequestBody NormaEntity normaEntity, HttpServletRequest httpServletRequest) {
 
         try {
-            NormaEntity normaEntityResult = normaService.save(normaEntity);
+            String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
+            NormaEntity normaEntityResult = normaService.save(normaEntity, username);
             return new ResponseEntity(normaEntityResult, HttpStatus.OK);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
@@ -76,7 +78,7 @@ public class NormaController {
         try {
             List<NormaEntity> normaEntitiesResult = new ArrayList<>();
 
-            if(normaEntities != null && !normaEntities.isEmpty()){
+            if (normaEntities != null && !normaEntities.isEmpty()) {
                 normaEntities.forEach(norma -> {
                     NormaEntity normaEntityResult = normaService.saveInternacional(norma);
                     normaEntitiesResult.add(normaEntityResult);

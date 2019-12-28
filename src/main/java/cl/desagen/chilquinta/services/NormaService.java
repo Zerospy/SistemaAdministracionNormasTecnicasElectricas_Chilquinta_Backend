@@ -82,6 +82,14 @@ public class NormaService {
         return normaRepository.findByTipoNorma(TipoNorma.NACIONAL);
     }
 
+    public Iterable<NormaEntity> findAllAssigned(String username) {
+
+        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
+        List<Integer> usersIds = solicitudObservacionNormaRepository.getUsersIds(usuarioEntityOptional.get().getId());
+
+        return normaRepository.findAllById(usersIds);
+    }
+
     public Iterable<NormaEntity> findAllIntenational() {
         return normaRepository.findByTipoNorma(TipoNorma.INTERNACIONAL);
     }
@@ -99,7 +107,7 @@ public class NormaService {
         Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.EN_REVISION.value));
         normaEntity.setEstado(normaEstado.get());
 
-        if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0) {
+        if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
             normaEntity.getUsersToComment().forEach(userToComment -> {
                 Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(userToComment.getUsuarioRecibeEntity().getId());
                 Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);

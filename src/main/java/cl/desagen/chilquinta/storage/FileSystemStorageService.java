@@ -103,7 +103,7 @@ public class FileSystemStorageService implements StorageService {
                 fileNormaEntity.setOriginalFileName(filename);
                 fileNormaEntity.setUrlFileLocation(finalFileName);
 
-                normaService.save(normaEntity);
+                normaService.save(normaEntity, null);
 
                 fileNormaService.save(fileNormaEntity);
             }
