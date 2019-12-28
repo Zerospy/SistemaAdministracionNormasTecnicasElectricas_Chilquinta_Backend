@@ -107,6 +107,9 @@ public class NormaService {
         normaEntity.setEstado(normaEstado.get());
 
         if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
+
+            solicitudObservacionNormaRepository.deleteNormasById(normaEntity.getId());
+
             normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
                 Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
                 Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
