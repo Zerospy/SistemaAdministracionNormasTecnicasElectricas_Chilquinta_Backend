@@ -108,18 +108,15 @@ public class NormaService {
         normaEntity.setEstado(normaEstado.get());
 
         if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
-            normaEntity.getUsersToComment().forEach(userToComment -> {
-                Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(userToComment.getUsuarioRecibeEntity().getId());
+            normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
+                Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
                 Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
-
-                SolicitudObservacionNormaEntity solicitudObservacionNormaEntity = new SolicitudObservacionNormaEntity();
 
                 solicitudObservacionNormaEntity.setUsuarioSolicitaEntity(usuarioSolicitaEntity.get());
                 solicitudObservacionNormaEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
                 solicitudObservacionNormaEntity.setNormaEntity(normaEntity);
                 solicitudObservacionNormaEntity.setCreatedAt(tsFromInstant);
-
-                solicitudObservacionNormaRepository.save(solicitudObservacionNormaEntity);
+                solicitudObservacionNormaEntity.setEnabled(true);
 
                 emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, normaEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), normaEntity.getCodNorma()));
             });

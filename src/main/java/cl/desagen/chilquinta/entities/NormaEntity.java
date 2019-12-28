@@ -37,7 +37,7 @@ public class NormaEntity {
     @JoinColumn(name = "estado_id")
     private EstadosEntity estado;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonProperty
     @JoinColumn(name = "norma_id")
     private List<SolicitudObservacionNormaEntity> usersToComment;

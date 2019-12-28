@@ -1,5 +1,6 @@
 package cl.desagen.chilquinta.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,8 +49,7 @@ public class SolicitudObservacionNormaEntity {
         this.id = id;
     }
 
-    @JsonProperty
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "norma_id")
     public NormaEntity getNormaEntity() {
         return normaEntity;
