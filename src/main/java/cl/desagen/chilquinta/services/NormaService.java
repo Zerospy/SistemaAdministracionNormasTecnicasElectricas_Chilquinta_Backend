@@ -3,7 +3,6 @@ package cl.desagen.chilquinta.services;
 import cl.desagen.chilquinta.dto.DashboardDto;
 import cl.desagen.chilquinta.entities.EstadosEntity;
 import cl.desagen.chilquinta.entities.NormaEntity;
-import cl.desagen.chilquinta.entities.SolicitudObservacionNormaEntity;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
 import cl.desagen.chilquinta.enums.EstadoNorma;
 import cl.desagen.chilquinta.enums.TipoNorma;
@@ -233,7 +232,7 @@ public class NormaService {
 
     public NormaEntity updateNorma(Integer id, NormaEntity normaEntity, String username) throws BusinessException {
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
-
+        Timestamp tsFromInstant = Timestamp.from(Instant.now());
 
         if (normaEntityOptional.isPresent()) {
 
@@ -241,8 +240,6 @@ public class NormaService {
             newEntity.setCodNorma(normaEntity.getCodNorma());
             newEntity.setNombre(normaEntity.getNombre());
             newEntity.setDescripcion(normaEntity.getDescripcion());
-            newEntity = normaRepository.save(newEntity);
-
 
             Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
             UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
@@ -252,7 +249,22 @@ public class NormaService {
             }
             emailService.sendEmail(mailTo, String.format(mailNormaEditadaSubject, normaEntity.getCodNorma()), String.format(mailNormaEditadaBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
 
-            return newEntity;
+            if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
+                normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
+                    Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
+                    Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
+
+                    solicitudObservacionNormaEntity.setUsuarioSolicitaEntity(usuarioSolicitaEntity.get());
+                    solicitudObservacionNormaEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
+                    solicitudObservacionNormaEntity.setNormaEntity(newEntity);
+                    solicitudObservacionNormaEntity.setCreatedAt(tsFromInstant);
+                    solicitudObservacionNormaEntity.setEnabled(true);
+
+                    emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, newEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), newEntity.getCodNorma()));
+                });
+            }
+
+            return normaRepository.save(newEntity);
 
         } else {
             normaEntity = normaRepository.save(normaEntity);

@@ -50,6 +50,7 @@ public class SolicitudObservacionNormaEntity {
     }
 
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "norma_id")
     public NormaEntity getNormaEntity() {
         return normaEntity;
