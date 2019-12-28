@@ -29,6 +29,8 @@ public class SolicitudObservacionNormaEntity {
 
     private Timestamp updatedAt;
 
+    @JsonProperty
+    @Column(name = "enabled")
     private Boolean enabled;
 
     @Transient
