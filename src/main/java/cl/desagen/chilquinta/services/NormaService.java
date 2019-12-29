@@ -84,9 +84,14 @@ public class NormaService {
     public Iterable<NormaEntity> findAllAssigned(String username) {
 
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
-        List<Integer> usersIds = solicitudObservacionNormaRepository.getUsersIds(usuarioEntityOptional.get().getId());
 
-        return normaRepository.findAllById(usersIds);
+        if (usuarioEntityOptional.get().getAdministrador()) {
+            return normaRepository.findAll(Sort.by(Sort.Direction.ASC, "codNorma"));
+        } else {
+            List<Integer> usersIds = solicitudObservacionNormaRepository.getUsersIds(usuarioEntityOptional.get().getId());
+            return normaRepository.findAllById(usersIds);
+        }
+
     }
 
     public Iterable<NormaEntity> findAllIntenational() {
