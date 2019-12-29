@@ -1,6 +1,8 @@
 package cl.desagen.chilquinta.entities;
 
+import cl.desagen.chilquinta.dto.NormaDto;
 import cl.desagen.chilquinta.enums.TipoNorma;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -8,6 +10,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "norma", schema = "dbo", catalog = "NORMAS")
@@ -37,8 +40,8 @@ public class NormaEntity {
     @JoinColumn(name = "estado_id")
     private EstadosEntity estado;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JsonProperty
     @JoinColumn(name = "norma_id")
     private List<SolicitudObservacionNormaEntity> usersToComment;
 
@@ -91,5 +94,25 @@ public class NormaEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, codNorma, nombre, descripcion, estado, fecha, tipoTabla, urlPdf, urlCad);
+    }
+
+    public NormaDto toDto() {
+        NormaDto normaDto = new NormaDto();
+
+        normaDto.setId(this.id);
+        normaDto.setCodNorma(this.codNorma);
+        normaDto.setNombre(this.nombre);
+        normaDto.setDescripcion(this.descripcion);
+        normaDto.setEstado(this.estado);
+        normaDto.setUsersToComment(this.usersToComment);
+        normaDto.setFecha(this.fecha);
+        normaDto.setTipoTabla(this.tipoTabla);
+        normaDto.setUrlPdf(this.urlPdf);
+        normaDto.setUrlCad(this.urlCad);
+        normaDto.setDownloadCounter(this.downloadCounter);
+        normaDto.setTipoNorma(this.tipoNorma);
+        normaDto.setNombreIngles(this.nombreIngles);
+
+        return normaDto;
     }
 }

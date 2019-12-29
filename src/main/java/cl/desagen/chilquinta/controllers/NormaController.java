@@ -1,6 +1,7 @@
 package cl.desagen.chilquinta.controllers;
 
 import cl.desagen.chilquinta.commons.Constants;
+import cl.desagen.chilquinta.dto.NormaDto;
 import cl.desagen.chilquinta.entities.NormaEntity;
 import cl.desagen.chilquinta.enums.EstadoNorma;
 import cl.desagen.chilquinta.repositories.NormaRepository;
@@ -47,8 +48,8 @@ public class NormaController {
     }
 
     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public Optional<NormaEntity> findById(@PathVariable Integer id) {
-        return normaService.findById(id);
+    public NormaDto findById(@PathVariable Integer id) {
+        return normaService.findNormaDtoById(id);
     }
 
     @GetMapping(value = "findByStatus/{estadoNorma}", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -57,11 +58,11 @@ public class NormaController {
     }
 
     @PostMapping(value = "/", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity save(@RequestBody NormaEntity normaEntity, HttpServletRequest httpServletRequest) {
+    public ResponseEntity save(@RequestBody NormaDto normaEntity, HttpServletRequest httpServletRequest) {
 
         try {
             String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
-            NormaEntity normaEntityResult = normaService.save(normaEntity, username);
+            NormaEntity normaEntityResult = normaService.save(normaEntity.toEntity(), username);
             return new ResponseEntity(normaEntityResult, HttpStatus.OK);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
@@ -158,18 +159,15 @@ public class NormaController {
 
     }
 
-
     @PostMapping(value = "/updateNorma/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<NormaEntity> updateNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id, @RequestBody NormaEntity normaEntity) {
+    public ResponseEntity<NormaEntity> updateNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id, @RequestBody NormaDto normaEntity) {
 
         try {
 
             String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
-            NormaEntity normaUpdated = normaRepository.save(normaEntity);
+            NormaEntity normaUpdated = normaRepository.save(normaEntity.toEntity());
 
-
-            normaService.updateNorma(id, normaEntity, username);
-
+            normaService.updateNorma(id, normaEntity.toEntity(), username);
 
             return new ResponseEntity<NormaEntity>(normaUpdated, HttpStatus.OK);
         } catch (Exception e) {

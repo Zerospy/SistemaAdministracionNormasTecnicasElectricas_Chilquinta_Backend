@@ -1,6 +1,7 @@
 package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.dto.DashboardDto;
+import cl.desagen.chilquinta.dto.NormaDto;
 import cl.desagen.chilquinta.entities.EstadosEntity;
 import cl.desagen.chilquinta.entities.NormaEntity;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
@@ -150,6 +151,10 @@ public class NormaService {
         return normaRepository.saveAll(normaEntities);
     }
 
+    public NormaDto findNormaDtoById(Integer id) {
+        Optional<NormaEntity> normaEntity = normaRepository.findById(id);
+        return normaEntity.get().toDto();
+    }
 
     public Optional<NormaEntity> findById(Integer id) {
         return normaRepository.findById(id);
