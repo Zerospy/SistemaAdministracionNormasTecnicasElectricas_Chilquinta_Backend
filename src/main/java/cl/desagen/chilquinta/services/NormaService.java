@@ -3,9 +3,11 @@ package cl.desagen.chilquinta.services;
 import cl.desagen.chilquinta.dto.DashboardDto;
 import cl.desagen.chilquinta.dto.NormaDto;
 import cl.desagen.chilquinta.entities.EstadosEntity;
+import cl.desagen.chilquinta.entities.FileNormaEntity;
 import cl.desagen.chilquinta.entities.NormaEntity;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
 import cl.desagen.chilquinta.enums.EstadoNorma;
+import cl.desagen.chilquinta.enums.FileExtension;
 import cl.desagen.chilquinta.enums.TipoNorma;
 import cl.desagen.chilquinta.exceptions.BusinessException;
 import cl.desagen.chilquinta.repositories.*;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -43,6 +46,9 @@ public class NormaService {
 
     @Autowired
     private SolicitudObservacionNormaRepository solicitudObservacionNormaRepository;
+
+    @Autowired
+    private SharepointService sharepointService;
 
     @Value("${spring.mail.to}")
     private String[] mailTo;
@@ -77,6 +83,8 @@ public class NormaService {
     @Value("${spring.mail.normaeditada.body}")
     private String mailNormaEditadaBody;
 
+    @Value("${sharepoint.enabled}")
+    private Boolean sharepointEnabled;
 
     public Iterable<NormaEntity> findAll() {
         return normaRepository.findByTipoNorma(TipoNorma.NACIONAL);
@@ -209,6 +217,23 @@ public class NormaService {
             if (usuarioEntity == null) {
                 throw new BusinessException("User not found");
             }
+
+            //sharepoint
+            if (sharepointEnabled) {
+                Optional<FileNormaEntity> fileNormaPDF = fileNormaRepository.findByNormaEntityIdAndFileExtension(normaEntity.getId(), FileExtension.pdf);
+                Optional<FileNormaEntity> fileNormaCad = fileNormaRepository.findByNormaEntityIdAndFileExtension(normaEntity.getId(), FileExtension.cad);
+
+                if (fileNormaPDF.isPresent()) {
+                    FileNormaEntity fileNormaEntity = fileNormaPDF.get();
+                    sharepointService.sendDocumentToSharePoint(fileNormaEntity.getOriginalFileName(), new File(fileNormaEntity.getUrlFileLocation()));
+                }
+
+                if (fileNormaCad.isPresent()) {
+                    FileNormaEntity fileNormaEntity = fileNormaCad.get();
+                    sharepointService.sendDocumentToSharePoint(fileNormaEntity.getOriginalFileName(), new File(fileNormaEntity.getUrlFileLocation()));
+                }
+            }
+            //sharepoint
 
             emailService.sendEmail(mailTo, String.format(mailPublishSubject, normaEntity.getCodNorma()), String.format(mailPublishBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
 

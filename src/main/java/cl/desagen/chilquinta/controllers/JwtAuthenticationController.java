@@ -3,7 +3,10 @@ package cl.desagen.chilquinta.controllers;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
 import cl.desagen.chilquinta.security.*;
 import cl.desagen.chilquinta.services.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,6 +23,8 @@ import java.util.Optional;
 @RequestMapping("login")
 public class JwtAuthenticationController {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationController.class);
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -32,8 +37,20 @@ public class JwtAuthenticationController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private LdapService ldapService;
+
+    @Value("${ldap.enabled}")
+    private Boolean ldapEnabled;
+
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+
+        if (ldapEnabled) {
+            log.info("--auth ldap service {}", authenticationRequest.getUsername());
+            ldapService.search(authenticationRequest.getUsername());
+        }
+
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final SessionUser userDetails = (SessionUser) userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
