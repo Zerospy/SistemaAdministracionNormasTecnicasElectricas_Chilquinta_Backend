@@ -102,6 +102,9 @@ public class NormaService {
         }
 
     }
+    public Iterable<NormaEntity> findAllDocumentos() {
+        return normaRepository.findByTipoNorma(TipoNorma.DOCUMENTO);
+    }
 
     public Iterable<NormaEntity> findAllIntenational() {
         return normaRepository.findByTipoNorma(TipoNorma.INTERNACIONAL);
