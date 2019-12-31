@@ -47,6 +47,11 @@ public class NormaController {
         return normaService.findAllIntenational();
     }
 
+    @GetMapping(value = "/documentos/all", produces = APPLICATION_JSON_UTF8_VALUE)
+    public Iterable<NormaEntity> findAllDocumentos() {
+        return normaService.findAllDocumentos();
+    }
+
     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     public NormaDto findById(@PathVariable Integer id) {
         return normaService.findNormaDtoById(id);

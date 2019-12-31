@@ -102,6 +102,9 @@ public class NormaService {
         }
 
     }
+    public Iterable<NormaEntity> findAllDocumentos() {
+        return normaRepository.findByTipoNorma(TipoNorma.DOCUMENTO);
+    }
 
     public Iterable<NormaEntity> findAllIntenational() {
         return normaRepository.findByTipoNorma(TipoNorma.INTERNACIONAL);
@@ -116,7 +119,15 @@ public class NormaService {
         Timestamp tsFromInstant = Timestamp.from(Instant.now());
         normaEntity.setFecha(tsFromInstant);
         normaEntity.setDownloadCounter(0);
-        normaEntity.setTipoNorma(TipoNorma.NACIONAL);
+
+        if(normaEntity.getTipoNorma() != TipoNorma.DOCUMENTO){
+            normaEntity.setTipoNorma(TipoNorma.NACIONAL);}
+        else{
+
+            normaEntity.setTipoNorma(TipoNorma.DOCUMENTO);
+        }
+
+
         Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.EN_REVISION.value));
         normaEntity.setEstado(normaEstado.get());
 
