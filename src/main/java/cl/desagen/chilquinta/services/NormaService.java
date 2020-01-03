@@ -2,10 +2,7 @@ package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.dto.DashboardDto;
 import cl.desagen.chilquinta.dto.NormaDto;
-import cl.desagen.chilquinta.entities.EstadosEntity;
-import cl.desagen.chilquinta.entities.FileNormaEntity;
-import cl.desagen.chilquinta.entities.NormaEntity;
-import cl.desagen.chilquinta.entities.UsuarioEntity;
+import cl.desagen.chilquinta.entities.*;
 import cl.desagen.chilquinta.enums.EstadoNorma;
 import cl.desagen.chilquinta.enums.FileExtension;
 import cl.desagen.chilquinta.enums.TipoNorma;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -102,6 +100,7 @@ public class NormaService {
         }
 
     }
+
     public Iterable<NormaEntity> findAllDocumentos() {
         return normaRepository.findByTipoNorma(TipoNorma.DOCUMENTO);
     }
@@ -114,15 +113,16 @@ public class NormaService {
         return normaRepository.findAll(pageable);
     }
 
+    @Transactional
     public NormaEntity save(NormaEntity normaEntity, String username) {
 
         Timestamp tsFromInstant = Timestamp.from(Instant.now());
         normaEntity.setFecha(tsFromInstant);
         normaEntity.setDownloadCounter(0);
 
-        if(normaEntity.getTipoNorma() != TipoNorma.DOCUMENTO){
-            normaEntity.setTipoNorma(TipoNorma.NACIONAL);}
-        else{
+        if (normaEntity.getTipoNorma() != TipoNorma.DOCUMENTO) {
+            normaEntity.setTipoNorma(TipoNorma.NACIONAL);
+        } else {
 
             normaEntity.setTipoNorma(TipoNorma.DOCUMENTO);
         }
@@ -279,6 +279,7 @@ public class NormaService {
 
     }
 
+    @Transactional
     public NormaEntity updateNorma(Integer id, NormaEntity normaEntity, String username) throws BusinessException {
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
         Timestamp tsFromInstant = Timestamp.from(Instant.now());
@@ -300,19 +301,21 @@ public class NormaService {
 
             if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
 
-                solicitudObservacionNormaRepository.deleteNormasById(normaEntity.getId());
+                solicitudObservacionNormaRepository.deleteNormasById(newEntity.getId());
                 newEntity.getUsersToComment().clear();
 
                 normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
                     Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
-                    Optional<UsuarioEntity> usuarioSolicitaEntity = usuarioRepository.findByUsuario(username);
 
-                    solicitudObservacionNormaEntity.setUsuarioSolicitaEntity(usuarioSolicitaEntity.get());
-                    solicitudObservacionNormaEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
-                    solicitudObservacionNormaEntity.setNormaEntity(newEntity);
-                    solicitudObservacionNormaEntity.setCreatedAt(tsFromInstant);
-                    solicitudObservacionNormaEntity.setEnabled(true);
-                    newEntity.getUsersToComment().add(solicitudObservacionNormaEntity);
+                    SolicitudObservacionNormaEntity solObsEntity = new SolicitudObservacionNormaEntity();
+                    solObsEntity.setUsuarioSolicitaEntity(usuarioEntity);
+                    solObsEntity.setUsuarioRecibeEntity(usuarioRecibeEntity.get());
+                    solObsEntity.setNormaEntity(newEntity);
+                    solObsEntity.setCreatedAt(tsFromInstant);
+                    solObsEntity.setEnabled(true);
+
+                    solicitudObservacionNormaRepository.save(solObsEntity);
+
                     emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, newEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), newEntity.getCodNorma()));
                 });
             }
@@ -320,9 +323,7 @@ public class NormaService {
             return normaRepository.save(newEntity);
 
         } else {
-            normaEntity = normaRepository.save(normaEntity);
-
-            return normaEntity;
+            return normaRepository.save(normaEntity);
         }
 
     }

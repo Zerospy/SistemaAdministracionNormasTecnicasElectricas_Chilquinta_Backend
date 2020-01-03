@@ -45,8 +45,9 @@ public class ObservacionNormaController {
     }
 
     @GetMapping(value = "getByIdNorma/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public Iterable<ObservacionNormaEntity> findAllByNormaId(@PathVariable Integer id) {
-        return observacionnormaService.findAllByNormaId(id);
+    public Iterable<ObservacionNormaEntity> findAllByNormaId(@PathVariable Integer id, HttpServletRequest httpServletRequest) throws Exception {
+        String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
+        return observacionnormaService.findAllByNormaId(id, username);
     }
 
     @PostMapping(value = "/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)

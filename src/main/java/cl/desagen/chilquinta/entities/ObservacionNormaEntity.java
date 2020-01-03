@@ -27,11 +27,7 @@ public class ObservacionNormaEntity {
     private Timestamp updatedAt;
 
     @Transient
-    private Boolean isCurrentUserComment;
-
-    public Boolean getIsCurrentUserComment() {
-        return true;
-    }
+    private Boolean isCurrentUserComment = false;
 
     @Id
     @Column(name = "id")

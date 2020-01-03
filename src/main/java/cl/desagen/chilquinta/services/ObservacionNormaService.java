@@ -60,8 +60,15 @@ public class ObservacionNormaService {
         return observacionnormaRepository.findAll(pageable);
     }
 
-    public Iterable<ObservacionNormaEntity> findAllByNormaId(Integer normaId) {
-        return observacionnormaRepository.findAllByNormaEntityId(normaId);
+    public Iterable<ObservacionNormaEntity> findAllByNormaId(Integer normaId, String username) {
+        Iterable<ObservacionNormaEntity> allByNormaEntityId = observacionnormaRepository.findAllByNormaEntityId(normaId);
+
+        allByNormaEntityId.forEach(obsNorma -> {
+            UsuarioEntity usuarioEntity = obsNorma.getUsuarioEntity();
+            obsNorma.setIsCurrentUserComment(usuarioEntity != null && usuarioEntity.getUsuario().equalsIgnoreCase(username));
+        });
+
+        return allByNormaEntityId;
     }
 
 
@@ -116,7 +123,7 @@ public class ObservacionNormaService {
 
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
 
-        NormaEntity normaEntity = normaEntityOptional.isPresent() ? normaEntityOptional.get() : null;
+        NormaEntity normaEntity = normaEntityOptional.orElse(null);
 
         if (normaEntity == null) {
             throw new BusinessException("Norma entity not found");
@@ -141,7 +148,7 @@ public class ObservacionNormaService {
         observacionNormaEntity.setObservacion(comment.getComment());
         observacionNormaEntity.setUsuarioEntity(usuarioEntity);
         observacionNormaEntity.setCreatedAt(timestamp);
-
+        observacionNormaEntity.setIsCurrentUserComment(true);
         observacionnormaRepository.save(observacionNormaEntity);
 
         emailService.sendEmail(mailTo, String.format(mailCommentSubject, normaEntity.getCodNorma()), String.format(mailCommentBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
