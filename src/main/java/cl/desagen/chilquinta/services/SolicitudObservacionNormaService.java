@@ -147,7 +147,7 @@ public class SolicitudObservacionNormaService {
             throw new BusinessException("Norma entity not found");
         }
 
-        Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.CON_COMENTARIOS.value));
+        Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.CON_COMENTARIOS.value);
         normaEntity.setEstado(normaEstado.orElse(null));
         normaRepository.save(normaEntity);
 

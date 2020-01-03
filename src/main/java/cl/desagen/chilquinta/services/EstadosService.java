@@ -32,15 +32,15 @@ public class EstadosService {
     }
 
 
-    public Optional<EstadosEntity> findById(Long id) {
+    public Optional<EstadosEntity> findById(Integer id) {
         return estadosRepository.findById(id);
     }
 
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         return estadosRepository.existsById(id);
     }
 
-    public Iterable<EstadosEntity> findAllById(Iterable<Long> ids) {
+    public Iterable<EstadosEntity> findAllById(Iterable<Integer> ids) {
         return estadosRepository.findAllById(ids);
     }
 
@@ -48,7 +48,7 @@ public class EstadosService {
         return estadosRepository.count();
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         estadosRepository.deleteById(id);
     }
 

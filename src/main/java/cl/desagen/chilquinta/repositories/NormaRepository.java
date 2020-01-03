@@ -18,7 +18,7 @@ public interface NormaRepository extends PagingAndSortingRepository<NormaEntity,
     void increaseCounterNormaEntity(@Param("normaId") Integer normaId);
 
     @Query("SELECT n FROM NormaEntity n WHERE n.estado.id = :idEstadoNorma")
-    List<NormaEntity> findByStatus(@Param("idEstadoNorma") Long idEstadoNorma);
+    List<NormaEntity> findByStatus(@Param("idEstadoNorma") Integer idEstadoNorma);
 
     @Query("SELECT n FROM NormaEntity n WHERE n.tipoNorma = :tipoNorma")
     List<NormaEntity> findByTipoNorma(@Param("tipoNorma") TipoNorma tipoNorma);
@@ -27,7 +27,7 @@ public interface NormaRepository extends PagingAndSortingRepository<NormaEntity,
     Integer getNormasQuantity();
 
     @Query("SELECT Count(n) FROM NormaEntity n WHERE n.estado.id = :idEstadoNorma")
-    Integer getNormasPublished(@Param("idEstadoNorma") Long idEstadoNorma);
+    Integer getNormasPublished(@Param("idEstadoNorma") Integer idEstadoNorma);
 
     @Query("SELECT Count(n) FROM NormaEntity n WHERE n.id IN :idsNormasWithFiles")
     Integer getFileNormasQuantity(@Param("idsNormasWithFiles") List<Integer> idsNormasWithFiles);
@@ -48,8 +48,8 @@ public interface NormaRepository extends PagingAndSortingRepository<NormaEntity,
     List<NormaEntity> getNormasWithComment(@Param("idsNormasWithComments") List<Integer> idsNormasWithComments);
 
     @Query("SELECT Count(n) FROM NormaEntity n WHERE n.estado.id <> :idEstadoNorma")
-    Integer getCantidadNormasEnWorkflow(@Param("idEstadoNorma") Long idEstadoNorma);
+    Integer getCantidadNormasEnWorkflow(@Param("idEstadoNorma") Integer idEstadoNorma);
 
     @Query("SELECT n FROM NormaEntity n WHERE n.estado.id <> :idEstadoNorma")
-    List<NormaEntity> getNormasEnWorkflow(@Param("idEstadoNorma") Long idEstadoNorma);
+    List<NormaEntity> getNormasEnWorkflow(@Param("idEstadoNorma") Integer idEstadoNorma);
 }

@@ -128,7 +128,7 @@ public class NormaService {
         }
 
 
-        Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.EN_REVISION.value));
+        Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.EN_REVISION.value);
         normaEntity.setEstado(normaEstado.get());
 
         if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
@@ -159,7 +159,7 @@ public class NormaService {
         normaEntity.setFecha(tsFromInstant);
         normaEntity.setDownloadCounter(0);
         normaEntity.setTipoNorma(TipoNorma.INTERNACIONAL);
-        Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.EN_REVISION.value));
+        Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.EN_REVISION.value);
         normaEntity.setEstado(normaEstado.get());
 
         return normaRepository.save(normaEntity);
@@ -216,7 +216,7 @@ public class NormaService {
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
 
         if (normaEntityOptional.isPresent()) {
-            Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.PUBLICADA.value));
+            Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.PUBLICADA.value);
 
             NormaEntity normaEntity = normaEntityOptional.get();
             normaEntity.setEstado(normaEstado.orElse(null));
@@ -258,7 +258,7 @@ public class NormaService {
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
 
         if (normaEntityOptional.isPresent()) {
-            Optional<EstadosEntity> normaEstado = estadosRepository.findById(Long.valueOf(EstadoNorma.DADA_DE_BAJA.value));
+            Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.DADA_DE_BAJA.value);
 
             NormaEntity normaEntity = normaEntityOptional.get();
             normaEntity.setEstado(normaEstado.orElse(null));
@@ -290,6 +290,9 @@ public class NormaService {
             newEntity.setCodNorma(normaEntity.getCodNorma());
             newEntity.setNombre(normaEntity.getNombre());
             newEntity.setDescripcion(normaEntity.getDescripcion());
+
+            Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.EN_REVISION.value);
+            newEntity.setEstado(normaEstado.get());
 
             Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
             UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
@@ -339,13 +342,13 @@ public class NormaService {
     }
 
     public List<NormaEntity> findByStatus(EstadoNorma estadoNorma) {
-        return normaRepository.findByStatus(Long.valueOf(estadoNorma.value));
+        return normaRepository.findByStatus(estadoNorma.value);
     }
 
     public DashboardDto getDashboardInformation() {
 
         Integer normasQuantity = normaRepository.getNormasQuantity();
-        Integer normasPublished = normaRepository.getNormasPublished(Long.valueOf(EstadoNorma.PUBLICADA.value));
+        Integer normasPublished = normaRepository.getNormasPublished(EstadoNorma.PUBLICADA.value);
 
         List<Integer> idsNormasWithFiles = fileNormaRepository.getIdsNormasWithFiles();
         Integer fileNormasQuantity = idsNormasWithFiles != null && !idsNormasWithFiles.isEmpty() ? normaRepository.getFileNormasQuantity(idsNormasWithFiles) : 0;
@@ -355,7 +358,7 @@ public class NormaService {
         List<Integer> idsNormasWithComments = observacionNormaRepository.getIdsNormasWithComments();
         Integer normasCommentsQuantity = idsNormasWithComments != null && !idsNormasWithComments.isEmpty() ? normaRepository.getNormasCommentsQuantity(idsNormasWithComments) : 0;
 
-        Integer cantidadNormasEnWorkflow = normaRepository.getCantidadNormasEnWorkflow(Long.valueOf(EstadoNorma.PUBLICADA.value));
+        Integer cantidadNormasEnWorkflow = normaRepository.getCantidadNormasEnWorkflow(EstadoNorma.PUBLICADA.value);
 
         return new DashboardDto(normasQuantity, normasPublished, fileNormasQuantity, normasDownloaded, normasCommentsQuantity, cantidadNormasEnWorkflow);
 
@@ -374,7 +377,7 @@ public class NormaService {
     }
 
     public Iterable<NormaEntity> getNormasEnWorkflow() {
-        return normaRepository.getNormasEnWorkflow(Long.valueOf(EstadoNorma.PUBLICADA.value));
+        return normaRepository.getNormasEnWorkflow(EstadoNorma.PUBLICADA.value);
     }
 
 }

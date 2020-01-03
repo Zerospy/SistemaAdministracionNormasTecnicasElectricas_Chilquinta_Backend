@@ -29,7 +29,7 @@ public class EstadosController {
     }
 
     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public Optional<EstadosEntity> findById(@PathVariable Long id) {
+    public Optional<EstadosEntity> findById(@PathVariable Integer id) {
         return estadosService.findById(id);
     }
 
@@ -64,7 +64,7 @@ public class EstadosController {
     }
 
     @DeleteMapping(value = "/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Integer id) {
 
         try {
             estadosService.deleteById(id);
