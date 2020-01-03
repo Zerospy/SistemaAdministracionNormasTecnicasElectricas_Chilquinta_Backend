@@ -170,9 +170,8 @@ public class NormaController {
         try {
 
             String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
-            NormaEntity normaUpdated = normaRepository.save(normaEntity.toEntity());
 
-            normaService.updateNorma(id, normaEntity.toEntity(), username);
+            NormaEntity normaUpdated = normaService.updateNorma(id, normaEntity.toEntity(), username);
 
             return new ResponseEntity<NormaEntity>(normaUpdated, HttpStatus.OK);
         } catch (Exception e) {

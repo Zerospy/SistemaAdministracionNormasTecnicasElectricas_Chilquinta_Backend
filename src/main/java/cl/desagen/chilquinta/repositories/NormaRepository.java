@@ -14,8 +14,8 @@ public interface NormaRepository extends PagingAndSortingRepository<NormaEntity,
 
     @Transactional
     @Modifying
-    @Query("UPDATE NormaEntity NE SET NE.downloadCounter = NE.downloadCounter + 1")
-    void increaseCounterNormaEntity(Integer normaId);
+    @Query("UPDATE NormaEntity NE SET NE.downloadCounter = NE.downloadCounter + 1 WHERE NE.id = :normaId")
+    void increaseCounterNormaEntity(@Param("normaId") Integer normaId);
 
     @Query("SELECT n FROM NormaEntity n WHERE n.estado.id = :idEstadoNorma")
     List<NormaEntity> findByStatus(@Param("idEstadoNorma") Long idEstadoNorma);
