@@ -91,7 +91,7 @@ public class FileUploadController {
             }
 
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
 
     }
