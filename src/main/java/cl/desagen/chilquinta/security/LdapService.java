@@ -14,11 +14,7 @@ public class LdapService {
     private LdapTemplate ldapTemplate;
 
     public List<String> search(String username) {
-        return ldapTemplate
-                .search(
-                        "ou=users",
-                        "cn=" + username,
-                        (AttributesMapper<String>) attrs -> (String) attrs.get("cn").get());
+        return ldapTemplate.search("ou=users", "cn=" + username, (AttributesMapper<String>) attrs -> (String) attrs.get("cn").get());
     }
 
 }

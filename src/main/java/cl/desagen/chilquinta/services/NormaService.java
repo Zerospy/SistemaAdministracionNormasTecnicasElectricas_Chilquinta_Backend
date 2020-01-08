@@ -8,14 +8,16 @@ import cl.desagen.chilquinta.enums.FileExtension;
 import cl.desagen.chilquinta.enums.TipoNorma;
 import cl.desagen.chilquinta.exceptions.BusinessException;
 import cl.desagen.chilquinta.repositories.*;
+import cl.desagen.chilquinta.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -83,6 +85,9 @@ public class NormaService {
 
     @Value("${sharepoint.enabled}")
     private Boolean sharepointEnabled;
+
+    @Autowired
+    private StorageService storageService;
 
     public Iterable<NormaEntity> findAll() {
         return normaRepository.findByTipoNorma(TipoNorma.NACIONAL);
@@ -211,7 +216,7 @@ public class NormaService {
         return normaRepository.findAll(sort);
     }
 
-    public void publishNorma(Integer id, String username) throws BusinessException {
+    public void publishNorma(Integer id, String username) throws BusinessException, IOException {
 
         Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
 
@@ -235,13 +240,15 @@ public class NormaService {
                 Optional<FileNormaEntity> fileNormaCad = fileNormaRepository.findByNormaEntityIdAndFileExtension(normaEntity.getId(), FileExtension.cad);
 
                 if (fileNormaPDF.isPresent()) {
-                    FileNormaEntity fileNormaEntity = fileNormaPDF.get();
-                    sharepointService.sendDocumentToSharePoint(fileNormaEntity.getOriginalFileName(), new File(fileNormaEntity.getUrlFileLocation()));
+                    Resource resourcePdfFile = storageService.loadAsResource(normaEntity.getId(), FileExtension.pdf);
+                    if (resourcePdfFile.exists()) {
+                        sharepointService.sendDocumentToSharePoint(fileNormaPDF.get().getOriginalFileName(), resourcePdfFile.getFile());
+                    }
                 }
 
                 if (fileNormaCad.isPresent()) {
-                    FileNormaEntity fileNormaEntity = fileNormaCad.get();
-                    sharepointService.sendDocumentToSharePoint(fileNormaEntity.getOriginalFileName(), new File(fileNormaEntity.getUrlFileLocation()));
+                    Resource resourceCadFile = storageService.loadAsResource(normaEntity.getId(), FileExtension.cad);
+                    sharepointService.sendDocumentToSharePoint(fileNormaPDF.get().getOriginalFileName(), resourceCadFile.getFile());
                 }
             }
             //sharepoint

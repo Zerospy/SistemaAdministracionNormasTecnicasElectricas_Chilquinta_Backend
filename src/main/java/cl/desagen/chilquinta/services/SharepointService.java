@@ -1,6 +1,7 @@
 package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.sharepoint.DocumentoSCS;
+import cl.desagen.chilquinta.sharepoint.Respuesta;
 import cl.desagen.chilquinta.sharepoint.SharePointSCS;
 import cl.desagen.chilquinta.sharepoint.SharePointSCSSoap;
 import org.apache.commons.io.FileUtils;
@@ -34,7 +35,12 @@ public class SharepointService {
             documentoSCS.setNmArchivo(fileName);
             documentoSCS.setVlArchivo(encoded);
 
-            sharePointSCSSoap.setDocumento(documentoSCS);
+            Respuesta respuesta = sharePointSCSSoap.setDocumento(documentoSCS);
+
+            if (respuesta != null && respuesta.getCdError() != 0) {
+                log.error("Error: " + respuesta.getCdError());
+                throw new Exception("Ocurrió un error al comunicarse con sharepoint ");
+            }
         } catch (Exception e) {
             log.error("Error: " + e.getMessage(), e);
         }
