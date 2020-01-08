@@ -40,6 +40,8 @@ public class SharepointService {
             if (respuesta != null && respuesta.getCdError() != 0) {
                 log.error("Error: " + respuesta.getCdError());
                 throw new Exception("Ocurrió un error al comunicarse con sharepoint ");
+            } else {
+                log.info("Url Archivo: " + respuesta.getGlRetorno());
             }
         } catch (Exception e) {
             log.error("Error: " + e.getMessage(), e);
