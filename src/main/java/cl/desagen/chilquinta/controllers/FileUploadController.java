@@ -80,7 +80,7 @@ public class FileUploadController {
 
             if (fileType.pdf.equals(FileExtension.pdf)) {
                 return ResponseEntity.ok().headers(headers)
-                        .contentType(MediaType.APPLICATION_PDF)
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
                         .contentLength(resource.contentLength())
                         .body(bytes);
             } else {

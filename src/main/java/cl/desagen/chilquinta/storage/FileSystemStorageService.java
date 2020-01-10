@@ -5,6 +5,7 @@ import cl.desagen.chilquinta.entities.NormaEntity;
 import cl.desagen.chilquinta.enums.FileExtension;
 import cl.desagen.chilquinta.services.FileNormaService;
 import cl.desagen.chilquinta.services.NormaService;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -51,6 +52,7 @@ public class FileSystemStorageService implements StorageService {
     public void store(MultipartFile file, Integer normaId, FileExtension fileType) {
 
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         int salt = (int) Instant.now().getEpochSecond();
 
@@ -58,7 +60,7 @@ public class FileSystemStorageService implements StorageService {
 
         try {
             String hashFileName = DigestUtils.md5DigestAsHex(filename.getBytes());
-            String finalFileName = hashFileName + "." + fileType.name();
+            String finalFileName = hashFileName + "." + extension;
 
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
