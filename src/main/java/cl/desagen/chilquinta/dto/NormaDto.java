@@ -38,6 +38,10 @@ public class NormaDto {
 
     private String nombreIngles;
 
+    private String pdfFileName;
+
+    private String cadFileName;
+
     public NormaEntity toEntity() {
 
         NormaEntity normaEntity = new NormaEntity();

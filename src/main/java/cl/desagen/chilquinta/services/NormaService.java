@@ -177,7 +177,21 @@ public class NormaService {
 
     public NormaDto findNormaDtoById(Integer id) {
         Optional<NormaEntity> normaEntity = normaRepository.findById(id);
-        return normaEntity.get().toDto();
+
+        NormaDto normaDto = normaEntity.get().toDto();
+
+        Optional<FileNormaEntity> fileNormaPDF = fileNormaRepository.findByNormaEntityIdAndFileExtension(id, FileExtension.pdf);
+        Optional<FileNormaEntity> fileNormaCad = fileNormaRepository.findByNormaEntityIdAndFileExtension(id, FileExtension.cad);
+
+        if (fileNormaPDF.isPresent()) {
+            normaDto.setPdfFileName(fileNormaPDF.get().getOriginalFileName());
+        }
+
+        if (fileNormaCad.isPresent()) {
+            normaDto.setCadFileName(fileNormaCad.get().getOriginalFileName());
+        }
+
+        return normaDto;
     }
 
     public Optional<NormaEntity> findById(Integer id) {
