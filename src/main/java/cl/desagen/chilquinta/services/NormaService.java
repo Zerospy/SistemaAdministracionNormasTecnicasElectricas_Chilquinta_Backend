@@ -340,7 +340,7 @@ public class NormaService {
 
                     solicitudObservacionNormaRepository.save(solObsEntity);
 
-                    emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, newEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), newEntity.getCodNorma()));
+                    emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(";"), String.format(mailCommentRequestSubject, newEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), newEntity.getCodNorma()));
                 });
             }
 
