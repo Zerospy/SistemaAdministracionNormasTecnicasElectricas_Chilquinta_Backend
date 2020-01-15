@@ -1,6 +1,5 @@
 package cl.desagen.chilquinta.services;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService {
@@ -40,7 +40,7 @@ public class EmailService {
         msg.setFrom(mailFrom);
 
         msg.setSubject(mailSubject);
-        String mailBodyEscape = StringEscapeUtils.escapeHtml4(mailBody);
+        String mailBodyEscape = new String(mailBody.getBytes(), StandardCharsets.UTF_8);
         msg.setText(mailBodyEscape);
 
         javaMailSender.send(msg);
