@@ -48,7 +48,11 @@ public class JwtAuthenticationController {
 
         if (ldapEnabled) {
             log.info("--auth ldap service {}", authenticationRequest.getUsername());
-            ldapService.search(authenticationRequest.getUsername());
+            Boolean userExists = ldapService.userExists(authenticationRequest.getUsername());
+
+            if(!userExists){
+                throw new Exception("El usuario no existe en ldap.");
+            }
         }
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());

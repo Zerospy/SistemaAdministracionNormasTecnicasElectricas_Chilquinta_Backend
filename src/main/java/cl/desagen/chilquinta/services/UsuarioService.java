@@ -3,7 +3,11 @@ package cl.desagen.chilquinta.services;
 import cl.desagen.chilquinta.commons.FileUtil;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
 import cl.desagen.chilquinta.repositories.UsuarioRepository;
+import cl.desagen.chilquinta.security.LdapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,14 +17,21 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
+
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private LdapService ldapService;
+
+    @Value("${ldap.enabled}")
+    private Boolean ldapEnabled;
 
     public Iterable<UsuarioEntity> findAll() {
         return usuarioRepository.findAllByOrderByNombresAsc();
@@ -30,7 +41,7 @@ public class UsuarioService {
         return usuarioRepository.findAll(pageable);
     }
 
-    public UsuarioEntity save(UsuarioEntity usuarioEntity) throws NoSuchAlgorithmException {
+    public UsuarioEntity save(UsuarioEntity usuarioEntity) throws Exception {
 
         Optional<UsuarioEntity> usuarioEntityToSaveOptional = null;
 
@@ -44,6 +55,15 @@ public class UsuarioService {
 
         if (usuarioEntityToSaveOptional.isPresent()) {
             usuarioEntityToSave = usuarioEntityToSaveOptional.get();
+
+            if (ldapEnabled) {
+                log.info("--auth ldap service {}", usuarioEntityToSave.getUsuario());
+                Boolean userExists = ldapService.userExists(usuarioEntityToSave.getUsuario());
+
+                if(!userExists){
+                    throw new Exception("El usuario no existe en ldap.");
+                }
+            }
 
             usuarioEntityToSave.setNombres(usuarioEntity.getNombres());
             usuarioEntityToSave.setApellidos(usuarioEntity.getApellidos());
