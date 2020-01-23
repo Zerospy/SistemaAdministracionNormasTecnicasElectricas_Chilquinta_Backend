@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
+
 @Service
 public class LdapService {
 
@@ -14,7 +16,9 @@ public class LdapService {
     private LdapTemplate ldapTemplate;
 
     public List<String> search(String username) {
-        return ldapTemplate.search("ou=users", "cn=" + username, (AttributesMapper<String>) attrs -> (String) attrs.get("cn").get());
+//        return ldapTemplate.search("ou=users", "cn=" + username, (AttributesMapper<String>) attrs -> (String) attrs.get("cn").get());
+        ldapTemplate.setIgnorePartialResultException(true);
+        return ldapTemplate.search(query().where("objectclass").is(username), (AttributesMapper<String>) attrs -> (String) attrs.get("cn").get());
     }
 
 }
