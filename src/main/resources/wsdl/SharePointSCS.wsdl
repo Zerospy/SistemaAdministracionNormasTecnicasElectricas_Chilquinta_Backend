@@ -1,77 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
-      <s:element name="SetDocumento">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="objDocumento" type="tns:DocumentoSCS" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="DocumentoSCS">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="nm_archivo" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="vl_archivo" type="s:base64Binary" />
-        </s:sequence>
-      </s:complexType>
-      <s:element name="SetDocumentoResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="SetDocumentoResult" type="tns:Respuesta" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="Respuesta">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="cd_error" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="gl_retorno" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-    </s:schema>
-  </wsdl:types>
-  <wsdl:message name="SetDocumentoSoapIn">
-    <wsdl:part name="parameters" element="tns:SetDocumento" />
-  </wsdl:message>
-  <wsdl:message name="SetDocumentoSoapOut">
-    <wsdl:part name="parameters" element="tns:SetDocumentoResponse" />
-  </wsdl:message>
-  <wsdl:portType name="SharePointSCSSoap">
-    <wsdl:operation name="SetDocumento">
-      <wsdl:input message="tns:SetDocumentoSoapIn" />
-      <wsdl:output message="tns:SetDocumentoSoapOut" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="SharePointSCSSoap" type="tns:SharePointSCSSoap">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="SetDocumento">
-      <soap:operation soapAction="http://tempuri.org/SetDocumento" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:binding name="SharePointSCSSoap12" type="tns:SharePointSCSSoap">
-    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="SetDocumento">
-      <soap12:operation soapAction="http://tempuri.org/SetDocumento" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="SharePointSCS">
-    <wsdl:port name="SharePointSCSSoap" binding="tns:SharePointSCSSoap">
-      <soap:address location="http://shpprd.vialactea.local:8003/SharePointSCS.asmx" />
-    </wsdl:port>
-    <wsdl:port name="SharePointSCSSoap12" binding="tns:SharePointSCSSoap12">
-      <soap12:address location="http://shpprd.vialactea.local:8003/SharePointSCS.asmx" />
-    </wsdl:port>
-  </wsdl:service>
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  targetNamespace="http://tempuri.org/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+            <s:element name="SetDocumento">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="objDocumento" type="tns:Documento"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="Documento">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="nm_archivo" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="nm_directorio" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="vl_archivo" type="s:base64Binary"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="SetDocumentoResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="SetDocumentoResult" type="tns:Respuesta"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="Respuesta">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="cd_error" type="s:int"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="gl_retorno" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="SetDocumentoSoapIn">
+        <wsdl:part name="parameters" element="tns:SetDocumento"/>
+    </wsdl:message>
+    <wsdl:message name="SetDocumentoSoapOut">
+        <wsdl:part name="parameters" element="tns:SetDocumentoResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="WebService1Soap">
+        <wsdl:operation name="SetDocumento">
+            <wsdl:input message="tns:SetDocumentoSoapIn"/>
+            <wsdl:output message="tns:SetDocumentoSoapOut"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="WebService1Soap" type="tns:WebService1Soap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="SetDocumento">
+            <soap:operation soapAction="http://tempuri.org/SetDocumento" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="WebService1Soap12" type="tns:WebService1Soap">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="SetDocumento">
+            <soap12:operation soapAction="http://tempuri.org/SetDocumento" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="WebService1">
+        <wsdl:port name="WebService1Soap" binding="tns:WebService1Soap">
+            <soap:address location="http://10.135.170.115:8010/SharePointNormas.asmx"/>
+        </wsdl:port>
+        <wsdl:port name="WebService1Soap12" binding="tns:WebService1Soap12">
+            <soap12:address location="http://10.135.170.115:8010/SharePointNormas.asmx"/>
+        </wsdl:port>
+    </wsdl:service>
 </wsdl:definitions>

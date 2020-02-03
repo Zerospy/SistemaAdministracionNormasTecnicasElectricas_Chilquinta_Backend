@@ -256,13 +256,13 @@ public class NormaService {
                 if (fileNormaPDF.isPresent()) {
                     Resource resourcePdfFile = storageService.loadAsResource(normaEntity.getId(), FileExtension.pdf);
                     if (resourcePdfFile.exists()) {
-                        sharepointService.sendDocumentToSharePoint(fileNormaPDF.get().getOriginalFileName(), resourcePdfFile.getFile());
+                        sharepointService.sendDocumentToSharePoint(fileNormaPDF.get().getOriginalFileName(), resourcePdfFile.getFile(), FileExtension.pdf);
                     }
                 }
 
                 if (fileNormaCad.isPresent()) {
                     Resource resourceCadFile = storageService.loadAsResource(normaEntity.getId(), FileExtension.cad);
-                    sharepointService.sendDocumentToSharePoint(fileNormaPDF.get().getOriginalFileName(), resourceCadFile.getFile());
+                    sharepointService.sendDocumentToSharePoint(fileNormaCad.get().getOriginalFileName(), resourceCadFile.getFile(), FileExtension.cad);
                 }
             }
             //sharepoint

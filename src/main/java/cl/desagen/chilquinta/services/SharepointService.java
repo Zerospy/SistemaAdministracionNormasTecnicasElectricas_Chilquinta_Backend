@@ -1,9 +1,7 @@
 package cl.desagen.chilquinta.services;
 
-import cl.desagen.chilquinta.sharepoint.DocumentoSCS;
-import cl.desagen.chilquinta.sharepoint.Respuesta;
-import cl.desagen.chilquinta.sharepoint.SharePointSCS;
-import cl.desagen.chilquinta.sharepoint.SharePointSCSSoap;
+import cl.desagen.chilquinta.enums.FileExtension;
+import cl.desagen.chilquinta.sharepoint.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -22,17 +20,18 @@ public class SharepointService {
     @Value("${sharepoint.url}")
     private String sharepointUrl;
 
-    public void sendDocumentToSharePoint(String fileName, File file) {
+    public void sendDocumentToSharePoint(String fileName, File file, FileExtension fileExtension) {
 
         try {
-            SharePointSCS sharePointSCS = new SharePointSCS(new URL(sharepointUrl));
-            SharePointSCSSoap sharePointSCSSoap = sharePointSCS.getSharePointSCSSoap();
+            WebService1 sharePointSCS = new WebService1(new URL(sharepointUrl));
+            WebService1Soap sharePointSCSSoap = sharePointSCS.getWebService1Soap();
 
-            DocumentoSCS documentoSCS = new DocumentoSCS();
+            Documento documentoSCS = new Documento();
 
             byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 
             documentoSCS.setNmArchivo(fileName);
+            documentoSCS.setNmDirectorio(fileExtension.name());
             documentoSCS.setVlArchivo(encoded);
 
             Respuesta respuesta = sharePointSCSSoap.setDocumento(documentoSCS);
