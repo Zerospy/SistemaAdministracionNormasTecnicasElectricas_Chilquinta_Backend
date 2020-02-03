@@ -30,22 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetDocumento }
-     * 
-     */
-    public SetDocumento createSetDocumento() {
-        return new SetDocumento();
-    }
-
-    /**
-     * Create an instance of {@link DocumentoSCS }
-     * 
-     */
-    public DocumentoSCS createDocumentoSCS() {
-        return new DocumentoSCS();
-    }
-
-    /**
      * Create an instance of {@link SetDocumentoResponse }
      * 
      */
@@ -59,6 +43,22 @@ public class ObjectFactory {
      */
     public Respuesta createRespuesta() {
         return new Respuesta();
+    }
+
+    /**
+     * Create an instance of {@link SetDocumento }
+     * 
+     */
+    public SetDocumento createSetDocumento() {
+        return new SetDocumento();
+    }
+
+    /**
+     * Create an instance of {@link Documento }
+     * 
+     */
+    public Documento createDocumento() {
+        return new Documento();
     }
 
 }

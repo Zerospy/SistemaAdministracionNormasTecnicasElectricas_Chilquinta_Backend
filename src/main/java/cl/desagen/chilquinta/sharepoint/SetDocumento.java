@@ -8,20 +8,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para anonymous complex type.
+ * <p>Java class for anonymous complex type.
  * 
- * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="objDocumento" type="{http://tempuri.org/}DocumentoSCS" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
+ * &lt;complexType>
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="objDocumento" type="{http://tempuri.org/}Documento" minOccurs="0"/>
+ *       &lt;/sequence>
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
  * </pre>
  * 
  * 
@@ -33,29 +33,29 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "SetDocumento")
 public class SetDocumento {
 
-    protected DocumentoSCS objDocumento;
+    protected Documento objDocumento;
 
     /**
-     * Obtiene el valor de la propiedad objDocumento.
+     * Gets the value of the objDocumento property.
      * 
      * @return
      *     possible object is
-     *     {@link DocumentoSCS }
+     *     {@link Documento }
      *     
      */
-    public DocumentoSCS getObjDocumento() {
+    public Documento getObjDocumento() {
         return objDocumento;
     }
 
     /**
-     * Define el valor de la propiedad objDocumento.
+     * Sets the value of the objDocumento property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DocumentoSCS }
+     *     {@link Documento }
      *     
      */
-    public void setObjDocumento(DocumentoSCS value) {
+    public void setObjDocumento(Documento value) {
         this.objDocumento = value;
     }
 
