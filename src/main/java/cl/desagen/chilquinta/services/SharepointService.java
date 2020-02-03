@@ -1,7 +1,10 @@
 package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.enums.FileExtension;
-import cl.desagen.chilquinta.sharepoint.*;
+import cl.desagen.chilquinta.sharepoint.Documento;
+import cl.desagen.chilquinta.sharepoint.Respuesta;
+import cl.desagen.chilquinta.sharepoint.WebService1;
+import cl.desagen.chilquinta.sharepoint.WebService1Soap;
 import org.apache.commons.io.FileUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -20,7 +23,7 @@ public class SharepointService {
     @Value("${sharepoint.url}")
     private String sharepointUrl;
 
-    public void sendDocumentToSharePoint(String fileName, File file, FileExtension fileExtension) {
+    public String sendDocumentToSharePoint(String codNorma, String fileName, File file, FileExtension fileExtension) {
 
         try {
             WebService1 sharePointSCS = new WebService1(new URL(sharepointUrl));
@@ -31,7 +34,7 @@ public class SharepointService {
             byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 
             documentoSCS.setNmArchivo(fileName);
-            documentoSCS.setNmDirectorio(fileExtension.name());
+            documentoSCS.setNmDirectorio(String.format("%s/%s", codNorma, fileExtension.name()));
             documentoSCS.setVlArchivo(encoded);
 
             Respuesta respuesta = sharePointSCSSoap.setDocumento(documentoSCS);
@@ -41,11 +44,14 @@ public class SharepointService {
                 throw new Exception("Ocurrió un error al comunicarse con sharepoint ");
             } else {
                 log.info("Url Archivo: " + respuesta.getGlRetorno());
+
+                return respuesta.getGlRetorno();
             }
         } catch (Exception e) {
             log.error("Error: " + e.getMessage(), e);
         }
 
+        return null;
     }
 
 }
