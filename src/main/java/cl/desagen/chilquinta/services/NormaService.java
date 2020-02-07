@@ -314,9 +314,6 @@ public class NormaService {
             newEntity.setNombre(normaEntity.getNombre());
             newEntity.setDescripcion(normaEntity.getDescripcion());
 
-            Optional<EstadosEntity> normaEstado = estadosRepository.findById(EstadoNorma.EN_REVISION.value);
-            newEntity.setEstado(normaEstado.get());
-
             Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
             UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
 
