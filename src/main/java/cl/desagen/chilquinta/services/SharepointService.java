@@ -31,11 +31,11 @@ public class SharepointService {
 
             Documento documentoSCS = new Documento();
 
-            byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+            //byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 
             documentoSCS.setNmArchivo(fileName);
             documentoSCS.setNmDirectorio(String.format("Directorio/%s/%s", codNorma, fileExtension.name()));
-            documentoSCS.setVlArchivo(encoded);
+            documentoSCS.setVlArchivo(FileUtils.readFileToByteArray(file));
 
             Respuesta respuesta = sharePointSCSSoap.setDocumento(documentoSCS);
 
