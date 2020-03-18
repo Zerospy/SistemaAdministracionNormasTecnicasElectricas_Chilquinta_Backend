@@ -34,3 +34,4 @@ out/
 log/ChilquintaNormas\.log/spring\.log
 
 *.log
+log
