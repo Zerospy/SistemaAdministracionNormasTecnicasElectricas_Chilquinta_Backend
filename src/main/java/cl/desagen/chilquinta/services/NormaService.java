@@ -58,6 +58,7 @@ public class NormaService {
 
     @Value("${spring.mail.publish.body}")
     private String mailPublishBody;
+    
 
     @Value("${spring.mail.comment.request.subject}")
     private String mailCommentRequestSubject;
@@ -275,6 +276,34 @@ public class NormaService {
         }
 
     }
+        @Transactional
+    public  NormaEntity modificarCampos(Integer id,NormaEntity normaEntity, String username) throws BusinessException {
+
+        Optional<NormaEntity> normaEntityOptional = normaRepository.findById(id);
+
+        if (normaEntityOptional.isPresent()) {
+
+
+            NormaEntity newEntity = normaEntityOptional.get();
+
+
+            newEntity.setCodNorma(normaEntity.getCodNorma());
+            newEntity.setNombre(normaEntity.getNombre());
+            newEntity.setDescripcion(normaEntity.getDescripcion());
+
+
+
+            Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findByUsuario(username);
+
+            UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
+
+
+
+            return normaRepository.save(newEntity);
+        }
+            return normaRepository.save(normaEntity);
+    }
+
 
     public void dardeBajaNorma(Integer id, String username) throws BusinessException {
 
