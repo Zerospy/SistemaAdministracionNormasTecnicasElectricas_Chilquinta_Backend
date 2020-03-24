@@ -151,7 +151,7 @@ public class NormaService {
                 solicitudObservacionNormaEntity.setCreatedAt(tsFromInstant);
                 solicitudObservacionNormaEntity.setEnabled(true);
 
-                emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(""), String.format(mailCommentRequestSubject, normaEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), normaEntity.getCodNorma()));
+                emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(";"), String.format(mailCommentRequestSubject, normaEntity.getCodNorma()), String.format(mailCommentRequestBody, usuarioRecibeEntity.get().getFullName(), normaEntity.getCodNorma()));
             });
         }
 
@@ -297,7 +297,7 @@ public class NormaService {
 
             UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
 
-
+            emailService.sendEmail(mailTo, String.format(mailNormaEditadaBody, normaEntity.getCodNorma()), String.format(maildardeBajaSubject, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
 
             return normaRepository.save(newEntity);
         }

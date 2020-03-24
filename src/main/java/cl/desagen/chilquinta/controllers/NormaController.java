@@ -183,14 +183,13 @@ public class NormaController {
             }
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PostMapping(value = "/updateNorma/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<NormaEntity> updateNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id, @RequestBody NormaDto normaEntity) {
 
-        try {
-
+        try
+        {
             String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
 
             NormaEntity normaUpdated = normaService.updateNorma(id, normaEntity.toEntity(), username);
