@@ -286,7 +286,6 @@ public class NormaService {
 
             NormaEntity newEntity = normaEntityOptional.get();
 
-
             newEntity.setCodNorma(normaEntity.getCodNorma());
             newEntity.setNombre(normaEntity.getNombre());
             newEntity.setDescripcion(normaEntity.getDescripcion());
@@ -297,8 +296,7 @@ public class NormaService {
 
             UsuarioEntity usuarioEntity = usuarioEntityOptional.orElse(null);
 
-            emailService.sendEmail(mailTo, String.format(mailNormaEditadaBody, normaEntity.getCodNorma()), String.format(maildardeBajaSubject, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
-
+            emailService.sendEmail(mailTo, String.format(mailNormaEditadaSubject, normaEntity.getCodNorma()), String.format(mailNormaEditadaBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
             return normaRepository.save(newEntity);
         }
             return normaRepository.save(normaEntity);
