@@ -130,6 +130,7 @@ public class NormaController {
 
     }
 
+
     @PostMapping(value = "/publish/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity publishNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id) {
 
@@ -147,6 +148,27 @@ public class NormaController {
 
     }
 
+    @PostMapping(value = "/modificarCampos/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity modificarCampos(HttpServletRequest httpServletRequest, @PathVariable Integer id, @RequestBody NormaDto normaEntity) {
+
+        try {
+            String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
+
+            NormaEntity normaModificada = normaService.modificarCampos(id, normaEntity.toEntity(), username);
+
+            return new ResponseEntity(normaModificada, HttpStatus.OK);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(Constants.BAD_REQUEST_MESSAGE, e.getMessage(), e);
+            }
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+
+
     @PostMapping(value = "/dardebaja/{id}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity dardeBajaNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id) {
 
@@ -161,14 +183,13 @@ public class NormaController {
             }
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PostMapping(value = "/updateNorma/{id}", consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<NormaEntity> updateNorma(HttpServletRequest httpServletRequest, @PathVariable Integer id, @RequestBody NormaDto normaEntity) {
 
-        try {
-
+        try
+        {
             String username = jwtTokenUtil.getUsernameFromRequest(httpServletRequest);
 
             NormaEntity normaUpdated = normaService.updateNorma(id, normaEntity.toEntity(), username);
