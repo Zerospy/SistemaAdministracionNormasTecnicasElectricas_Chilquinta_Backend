@@ -53,6 +53,9 @@ public class NormaService {
     @Value("${spring.mail.to}")
     private String[] mailTo;
 
+    @Value("${spring.mail.to.publicar}")
+    private String[] mailToPublicar;
+
     @Value("${spring.mail.publish.subject}")
     private String mailPublishSubject;
 
@@ -270,7 +273,8 @@ public class NormaService {
             }
             //sharepoint
 
-            emailService.sendEmail(mailTo, String.format(mailPublishSubject, normaEntity.getCodNorma()), String.format(mailPublishBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+            emailService.sendEmail(mailToPublicar, String.format(mailPublishSubject, normaEntity.getCodNorma()), String.format(mailPublishBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+
 
             normaRepository.save(normaEntity);
         }
@@ -354,7 +358,7 @@ public class NormaService {
                 solicitudObservacionNormaRepository.deleteNormasById(newEntity.getId());
                 newEntity.getUsersToComment().clear();
 
-                normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
+                    normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
                     Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
 
                     SolicitudObservacionNormaEntity solObsEntity = new SolicitudObservacionNormaEntity();
