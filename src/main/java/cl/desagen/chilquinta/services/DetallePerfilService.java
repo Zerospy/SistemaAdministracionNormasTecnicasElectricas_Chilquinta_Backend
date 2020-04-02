@@ -1,13 +1,14 @@
 package cl.desagen.chilquinta.services;
 
-import cl.desagen.chilquinta.entities.DetallePerfilEntity;
-import cl.desagen.chilquinta.repositories.DetallePerfilRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import cl.desagen.chilquinta.entities.DetallePerfilEntity;
+import cl.desagen.chilquinta.repositories.DetallePerfilRepository;
 
 @Service
 public class DetallePerfilService {
@@ -66,6 +67,10 @@ public class DetallePerfilService {
 
     public Iterable<DetallePerfilEntity> findAll(Sort sort) {
         return detalleperfilRepository.findAll(sort);
+    }
+    
+    public Optional<DetallePerfilEntity> findByUsuarioId(Integer id) {
+        return detalleperfilRepository.findByUsuarioId(id);
     }
 
 }
