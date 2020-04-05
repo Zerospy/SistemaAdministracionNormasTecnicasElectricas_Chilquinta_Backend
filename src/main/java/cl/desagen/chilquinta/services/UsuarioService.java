@@ -1,7 +1,10 @@
 package cl.desagen.chilquinta.services;
 
 import cl.desagen.chilquinta.commons.FileUtil;
+import cl.desagen.chilquinta.entities.DetallePerfilEntity;
 import cl.desagen.chilquinta.entities.UsuarioEntity;
+import cl.desagen.chilquinta.entities.UsuarioSaveRequest;
+import cl.desagen.chilquinta.repositories.DetallePerfilRepository;
 import cl.desagen.chilquinta.repositories.UsuarioRepository;
 import cl.desagen.chilquinta.security.LdapService;
 import org.slf4j.Logger;
@@ -17,149 +20,183 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
-    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
+	private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private LdapService ldapService;
+	@Autowired
+	private DetallePerfilRepository detallePerfilRepository;
 
-    @Value("${ldap.enabled}")
-    private Boolean ldapEnabled;
+	@Autowired
+	private LdapService ldapService;
 
-    public Iterable<UsuarioEntity> findAll() {
-        return usuarioRepository.findAllByOrderByNombresAsc();
-    }
+	@Value("${ldap.enabled}")
+	private Boolean ldapEnabled;
 
-    public Iterable<UsuarioEntity> findAll(Pageable pageable) {
-        return usuarioRepository.findAll(pageable);
-    }
+	public Iterable<UsuarioEntity> findAll() {
+		return usuarioRepository.findAllByOrderByNombresAsc();
+	}
 
-    public UsuarioEntity save(UsuarioEntity usuarioEntity) throws Exception {
+	public Iterable<UsuarioEntity> findAll(Pageable pageable) {
+		return usuarioRepository.findAll(pageable);
+	}
 
-        Optional<UsuarioEntity> usuarioEntityToSaveOptional = null;
+	public UsuarioEntity save(UsuarioSaveRequest usuario) throws Exception {
 
-        if (usuarioEntity.getId() != null && usuarioEntity.getId() > 0) {
-            usuarioEntityToSaveOptional = usuarioRepository.findById(usuarioEntity.getId());
-        } else {
-            usuarioEntityToSaveOptional = Optional.of(new UsuarioEntity());
-        }
+		Optional<UsuarioEntity> usuarioEntityToSaveOptional = null;
 
-        UsuarioEntity usuarioEntityToSave;
+		UsuarioEntity usuarioEntity = new UsuarioEntity();
+		usuarioEntity.setId(usuario.getId());
+		usuarioEntity.setNombres(usuario.getNombres());
+		usuarioEntity.setApellidos(usuario.getApellidos());
+		usuarioEntity.setUsuario(usuario.getUsuario());
+		usuarioEntity.setClave(usuario.getClave());
+		usuarioEntity.setEstado(usuario.getEstado());
+		usuarioEntity.setTimestamp(usuario.getTimestamp());
+		usuarioEntity.setEmail(usuario.getEmail());
+		usuarioEntity.setClaveTextoPlano(usuario.getClaveTextoPlano());
+		usuarioEntity.setAvatarBase64(usuario.getAvatarBase64());
+		usuarioEntity.setAdministrador(usuario.getAdministrador());
 
-        if (usuarioEntityToSaveOptional.isPresent()) {
-            usuarioEntityToSave = usuarioEntityToSaveOptional.get();
+		if (usuarioEntity.getId() != null && usuarioEntity.getId() > 0) {
+			usuarioEntityToSaveOptional = usuarioRepository.findById(usuarioEntity.getId());
+		} else {
+			usuarioEntityToSaveOptional = Optional.of(new UsuarioEntity());
+		}
 
-            if (ldapEnabled) {
-                log.info("--auth ldap service {}", usuarioEntityToSave.getUsuario());
-                Boolean userExists = ldapService.userExists(usuarioEntityToSave.getUsuario());
+		UsuarioEntity usuarioEntityToSave;
 
-                if(!userExists){
-                    throw new Exception("El usuario no existe en ldap.");
-                }
-            }
+		if (usuarioEntityToSaveOptional.isPresent()) {
+			usuarioEntityToSave = usuarioEntityToSaveOptional.get();
 
-            usuarioEntityToSave.setNombres(usuarioEntity.getNombres());
-            usuarioEntityToSave.setApellidos(usuarioEntity.getApellidos());
-            usuarioEntityToSave.setUsuario(usuarioEntity.getUsuario());
-            usuarioEntityToSave.setEmail(usuarioEntity.getEmail());
+			if (ldapEnabled) {
+				log.info("--auth ldap service {}", usuarioEntityToSave.getUsuario());
+				Boolean userExists = ldapService.userExists(usuarioEntityToSave.getUsuario());
 
-            if (usuarioEntity.getClave() != null && !usuarioEntity.getClave().isEmpty()) {
+				if (!userExists) {
+					throw new Exception("El usuario no existe en ldap.");
+				}
+			}
 
-                MessageDigest md = MessageDigest.getInstance("MD5");
-                md.update(usuarioEntity.getClave().getBytes());
-                byte[] digest = md.digest();
-                String passwordMD5 = DatatypeConverter
-                        .printHexBinary(digest).toUpperCase();
+			usuarioEntityToSave.setNombres(usuarioEntity.getNombres());
+			usuarioEntityToSave.setApellidos(usuarioEntity.getApellidos());
+			usuarioEntityToSave.setUsuario(usuarioEntity.getUsuario());
+			usuarioEntityToSave.setEmail(usuarioEntity.getEmail());
 
-                usuarioEntityToSave.setClave(passwordMD5);
-                usuarioEntityToSave.setClaveTextoPlano(usuarioEntity.getClave());
-            }
+			if (usuarioEntity.getClave() != null && !usuarioEntity.getClave().isEmpty()) {
 
-            usuarioEntityToSave.setEstado(usuarioEntity.getEstado());
-            usuarioEntityToSave.setAdministrador(usuarioEntity.getAdministrador());
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				md.update(usuarioEntity.getClave().getBytes());
+				byte[] digest = md.digest();
+				String passwordMD5 = DatatypeConverter.printHexBinary(digest).toUpperCase();
 
-            return usuarioRepository.save(usuarioEntityToSave);
-        }
+				usuarioEntityToSave.setClave(passwordMD5);
+				usuarioEntityToSave.setClaveTextoPlano(usuarioEntity.getClave());
+			}
 
-        return null;
+			usuarioEntityToSave.setEstado(usuarioEntity.getEstado());
+			usuarioEntityToSave.setAdministrador(usuarioEntity.getAdministrador());
 
-    }
+			UsuarioEntity nuevoUsuario = usuarioRepository.save(usuarioEntityToSave);
 
-    public UsuarioEntity saveAvatar(Integer userId, MultipartFile multipartFile) throws IOException {
+			DetallePerfilEntity nuevaRelacion = new DetallePerfilEntity();
 
-        Optional<UsuarioEntity> usuarioEntityToSaveOptional = usuarioRepository.findById(userId);
+			if (nuevoUsuario.getId() != null && !nuevoUsuario.getAdministrador() && usuario.getPerfil() != null
+					&& usuario.getIdPerfil() == null) {
+				nuevaRelacion.setId(null);
+				nuevaRelacion.setUsuarioId(nuevoUsuario.getId());
+				nuevaRelacion.setPerfilId(usuario.getPerfil());
+				detallePerfilRepository.save(nuevaRelacion);
+				log.info("Relacion guardada correctamente {}", nuevaRelacion.getId());
 
-        UsuarioEntity usuarioEntityToSave;
+			} else if (usuario.getIdPerfil() != null) {
+				nuevaRelacion.setId(usuario.getIdPerfil());
+				nuevaRelacion.setUsuarioId(usuario.getId());
+				nuevaRelacion.setPerfilId(usuario.getPerfil());
+				detallePerfilRepository.save(nuevaRelacion);
+				log.info("Relacion Actualizada correctamente {}", nuevaRelacion.getId());
+			}
+			return usuarioEntityToSave;
+		}
 
-        if (usuarioEntityToSaveOptional.isPresent()) {
-            usuarioEntityToSave = usuarioEntityToSaveOptional.get();
+		return null;
 
-            File avatarImage = FileUtil.convert(multipartFile);
-            String base64 = FileUtil.encodeFileToBase64(avatarImage);
+	}
 
-            usuarioEntityToSave.setAvatarBase64(base64);
+	public UsuarioEntity saveAvatar(Integer userId, MultipartFile multipartFile) throws IOException {
 
-            return usuarioRepository.save(usuarioEntityToSave);
-        }
+		Optional<UsuarioEntity> usuarioEntityToSaveOptional = usuarioRepository.findById(userId);
 
-        return null;
+		UsuarioEntity usuarioEntityToSave;
 
-    }
+		if (usuarioEntityToSaveOptional.isPresent()) {
+			usuarioEntityToSave = usuarioEntityToSaveOptional.get();
 
-    public Iterable<UsuarioEntity> saveAll(Iterable<UsuarioEntity> usuarioEntities) {
-        return usuarioRepository.saveAll(usuarioEntities);
-    }
+			File avatarImage = FileUtil.convert(multipartFile);
+			String base64 = FileUtil.encodeFileToBase64(avatarImage);
 
-    public Optional<UsuarioEntity> findById(Integer id) {
-        return usuarioRepository.findById(id);
-    }
+			usuarioEntityToSave.setAvatarBase64(base64);
 
-    public Optional<UsuarioEntity> findByUsuarioAndClave(String username, String clave) {
-        return usuarioRepository.findByUsuarioAndClave(username, clave);
-    }
+			return usuarioRepository.save(usuarioEntityToSave);
+		}
 
+		return null;
 
-    public Optional<UsuarioEntity> findByUsuario(String username) {
-        return usuarioRepository.findByUsuario(username);
-    }
+	}
 
-    public boolean existsById(Integer id) {
-        return usuarioRepository.existsById(id);
-    }
+	public Iterable<UsuarioEntity> saveAll(Iterable<UsuarioEntity> usuarioEntities) {
+		return usuarioRepository.saveAll(usuarioEntities);
+	}
 
-    public Iterable<UsuarioEntity> findAllById(Iterable<Integer> ids) {
-        return usuarioRepository.findAllById(ids);
-    }
+	public Optional<UsuarioEntity> findById(Integer id) {
+		return usuarioRepository.findById(id);
+	}
 
-    public long count() {
-        return usuarioRepository.count();
-    }
+	public Optional<UsuarioEntity> findByUsuarioAndClave(String username, String clave) {
+		return usuarioRepository.findByUsuarioAndClave(username, clave);
+	}
 
-    public void deleteById(Integer id) {
-        usuarioRepository.deleteById(id);
-    }
+	public Optional<UsuarioEntity> findByUsuario(String username) {
+		return usuarioRepository.findByUsuario(username);
+	}
 
-    public void delete(UsuarioEntity usuarioEntity) {
-        usuarioRepository.delete(usuarioEntity);
-    }
+	public boolean existsById(Integer id) {
+		return usuarioRepository.existsById(id);
+	}
 
-    public void deleteAll(Iterable<UsuarioEntity> usuarioEntities) {
-        usuarioRepository.deleteAll(usuarioEntities);
-    }
+	public Iterable<UsuarioEntity> findAllById(Iterable<Integer> ids) {
+		return usuarioRepository.findAllById(ids);
+	}
 
-    public void deleteAll() {
-        usuarioRepository.deleteAll();
-    }
+	public long count() {
+		return usuarioRepository.count();
+	}
 
-    public Iterable<UsuarioEntity> findAll(Sort sort) {
-        return usuarioRepository.findAll(sort);
-    }
+	public void deleteById(Integer id) {
+		usuarioRepository.deleteById(id);
+	}
+
+	public void delete(UsuarioEntity usuarioEntity) {
+		usuarioRepository.delete(usuarioEntity);
+	}
+
+	public void deleteAll(Iterable<UsuarioEntity> usuarioEntities) {
+		usuarioRepository.deleteAll(usuarioEntities);
+	}
+
+	public void deleteAll() {
+		usuarioRepository.deleteAll();
+	}
+
+	public Iterable<UsuarioEntity> findAll(Sort sort) {
+		return usuarioRepository.findAll(sort);
+	}
 
 }

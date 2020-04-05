@@ -1,7 +1,16 @@
 package cl.desagen.chilquinta.entities;
 
-import javax.persistence.*;
 import java.util.Objects;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Entity
 @Table(name = "detalle_perfil", schema = "dbo", catalog = "NORMAS")
@@ -11,7 +20,9 @@ public class DetallePerfilEntity {
     private Integer perfilId;
 
     @Id
-    @Column(name = "id")
+    @JsonPropertyOrder
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     public Long getId() {
         return id;
     }
