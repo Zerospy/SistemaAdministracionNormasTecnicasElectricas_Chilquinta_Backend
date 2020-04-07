@@ -52,4 +52,7 @@ public interface NormaRepository extends PagingAndSortingRepository<NormaEntity,
 
     @Query("SELECT n FROM NormaEntity n WHERE n.estado.id <> :idEstadoNorma")
     List<NormaEntity> getNormasEnWorkflow(@Param("idEstadoNorma") Integer idEstadoNorma);
+
+    @Query("SELECT n FROM NormaEntity n WHERE n.codNorma = :codNorma")
+    NormaEntity existsByCodNorma(@Param("codNorma") String codNorma);
 }

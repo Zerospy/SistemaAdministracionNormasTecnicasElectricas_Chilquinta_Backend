@@ -430,5 +430,16 @@ public class NormaService {
     public Iterable<NormaEntity> getNormasEnWorkflow() {
         return normaRepository.getNormasEnWorkflow(EstadoNorma.PUBLICADA.value);
     }
+    
+    public boolean existsByCodNorma(String codNorma) {
+    	boolean existe = false;
+    	NormaEntity norma = normaRepository.existsByCodNorma(codNorma);
+    	
+    	if(norma != null) {
+    		existe = true;
+    	}
+    	
+        return existe;
+    } 
 
 }

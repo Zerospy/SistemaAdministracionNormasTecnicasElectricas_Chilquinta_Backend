@@ -204,4 +204,9 @@ public class NormaController {
 
 
     }
+    
+    @GetMapping(value = "existsByCodNorma/{codNorma}", produces = APPLICATION_JSON_UTF8_VALUE)
+    public boolean existsByCodNorma(@PathVariable String codNorma) {
+        return normaService.existsByCodNorma(codNorma);
+    }
 }
