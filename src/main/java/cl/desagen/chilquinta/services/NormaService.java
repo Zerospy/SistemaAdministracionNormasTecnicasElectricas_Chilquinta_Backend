@@ -17,11 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.CollectionTable;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class NormaService {
@@ -93,9 +93,16 @@ public class NormaService {
     @Autowired
     private StorageService storageService;
 
+    @CollectionTable
+    private String [] emails;
+
     public Iterable<NormaEntity> findAll() {
         return normaRepository.findByTipoNorma(TipoNorma.NACIONAL);
     }
+
+    @Autowired
+    private UsuarioService usuarioService;
+
 
     public Iterable<NormaEntity> findAllAssigned(String username) {
 
@@ -233,6 +240,21 @@ public class NormaService {
     public Iterable<NormaEntity> findAll(Sort sort) {
         return normaRepository.findAll(sort);
     }
+    public static String[] GetStringArray(ArrayList<String> arr)
+    {
+
+        // declaration and initialise String Array
+        String str[] = new String[arr.size()];
+
+        // ArrayList to Array Conversion
+        for (int j = 0; j < arr.size(); j++) {
+
+            // Assign each value to String array
+            str[j] = arr.get(j);
+        }
+
+        return str;
+    }
 
     public void publishNorma(Integer id, String username) throws BusinessException, IOException {
 
@@ -271,9 +293,22 @@ public class NormaService {
                     normaEntity.setUrlCad(sharePointUrl);
                 }
             }
-            //sharepoint
+            ArrayList <String> emailsUsuarios = new ArrayList<String>();
+            usuarioRepository.findAll().forEach(ObtenerUsuariosEmail -> {
 
-            emailService.sendEmail(mailToPublicar, String.format(mailPublishSubject, normaEntity.getCodNorma()), String.format(mailPublishBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+
+
+
+
+                emailsUsuarios.add(ObtenerUsuariosEmail.getEmail());
+         //       String[] correos = ObtenerUsuariosEmail.getEmail();
+                String mailToPublicar [] = GetStringArray(emailsUsuarios);
+
+                emailService.sendEmail(mailToPublicar, String.format(mailPublishSubject, normaEntity.getCodNorma()), String.format(mailPublishBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+                    emailsUsuarios.clear();
+
+                System.out.println(emailsUsuarios);
+            });
 
 
             normaRepository.save(normaEntity);
