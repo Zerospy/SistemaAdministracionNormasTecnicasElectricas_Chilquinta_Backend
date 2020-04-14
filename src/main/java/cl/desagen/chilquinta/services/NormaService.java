@@ -96,7 +96,7 @@ public class NormaService {
     @CollectionTable
     private String [] emails;
 
-    public Iterable<NormaEntity> findAll() {
+    public List<NormaEntity> findAll() {
         return normaRepository.findByTipoNorma(TipoNorma.NACIONAL);
     }
 
