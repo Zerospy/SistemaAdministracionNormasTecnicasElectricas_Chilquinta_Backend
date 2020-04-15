@@ -151,7 +151,19 @@ public class ObservacionNormaService {
         observacionNormaEntity.setIsCurrentUserComment(true);
         observacionnormaRepository.save(observacionNormaEntity);
 
-        emailService.sendEmail(mailTo, String.format(mailCommentSubject, normaEntity.getCodNorma()), String.format(mailCommentBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+
+   if (normaEntity.getUsersToComment() != null && normaEntity.getUsersToComment().size() > 0 && username != null) {
+
+            normaEntity.getUsersToComment().forEach(solicitudObservacionNormaEntity -> {
+                Optional<UsuarioEntity> usuarioRecibeEntity = usuarioRepository.findById(solicitudObservacionNormaEntity.getUsuarioRecibeEntity().getId());
+
+
+                System.out.println(usuarioRecibeEntity.get());
+                emailService.sendEmail(usuarioRecibeEntity.get().getEmail().split(";"), String.format(mailCommentSubject, normaEntity.getCodNorma()), String.format(mailCommentBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
+            });
+        }
+
+       // emailService.sendEmail(mailTo, String.format(mailCommentSubject, normaEntity.getCodNorma()), String.format(mailCommentBody, normaEntity.getCodNorma(), usuarioEntity.getFullName()));
 
         return observacionNormaEntity;
     }
